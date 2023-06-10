@@ -164,7 +164,7 @@ void CPU::execute() {
 		case 0x7000: { // add to v		
 			std::uint16_t x = (instruction & 0x0F00) >> 8;
 			std::uint16_t newVal = this->v[x] + (instruction & 0x00FF);
-			this->v[x] = newVal > 255 ? 255 : newVal;
+			this->v[x] = newVal;
 			break;
 		}
 		case 0x8000: {
@@ -186,7 +186,6 @@ void CPU::execute() {
 				case 0x4: {// add
 					std::uint16_t newVal = this->v[x] + this->v[y];
 					if (newVal > 0xFF) {
-						newVal = 0xFF;
 						this->v[0xF] = 1;
 					}
 					else {
@@ -212,11 +211,12 @@ void CPU::execute() {
 					this->v[x] = newVal;
 					break;
 				}
-				case 0x8: {// div
+				case 0xE: {// div
 					this->v[0xF] = this->v[x] & 0b1000'0000;;
 					this->v[x] = this->v[x] << 1;
 					break;
 				}
+
 			}
 			break;
 		}
@@ -247,11 +247,19 @@ void CPU::execute() {
 			this->v[0xF] = 0;
 
 			for (int i = 0; i < n; i++) {
-				std::uint8_t row = this->v[y] + i;
+				std::uint8_t row = (this->v[y] + i);
+				if (row > 32 && i == 0) {
+					break;
+				}
+				row %= 32;
 				std::uint8_t sprite = this->ram[this->i + i];
 
 				for (std::uint8_t j = 0; j < 8; j++) {
-					std::uint8_t column = (this->v[x] + j) % 64;
+					std::uint8_t column = (this->v[x] + j);
+					if (column > 64 && j == 0) {
+						break;
+					}
+					column %= 64;
 					bool isOn = this->screen[row][column];
 					bool newVal = (sprite & (0x80 >> j)) != 0;
 					if (isOn && newVal) { // got turned off -> collision
@@ -309,29 +317,29 @@ void CPU::execute() {
 				}
 				case 0x0033: { // do bcd conversion
 					std::uint8_t val = this->v[x];
-					this->v[i] = val % 10;
-					this->v[i + 1] = (val % 100) / 10;
-					this->v[i + 2] = val / 100;
+					this->ram[i] = val % 10;
+					this->ram[i + 1] = (val % 100) / 10;
+					this->ram[i + 2] = val / 100;
 					break;
 				}
 				case 0x0055: { // load registers into ram
-					int current = this->i;
-					for (int i = 0; i < 0xF; i++) {
+					std::uint16_t current = this->i;
+					for (int i = 0; i < x; i++) {
 						this->ram[current] = this->v[i];
 						current++;
 					}
 					break;
 				}
 				case 0x0065: { // load ram into registers
-					int current = this->i;
-					for (int i = 0; i < 0xF; i++) {
+					std::uint16_t current = this->i;
+					for (int i = 0; i <= x; i++) {
 						this->v[i] = this->ram[current];
 						current++;
 					}
 					break;
 				}
 			}
-
+			break;
 		}	
 	}
 }

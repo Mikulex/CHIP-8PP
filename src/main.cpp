@@ -33,7 +33,7 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(64 * scale, 32 * scale), "CHIP-8PP Emulator");
 
     
-    window.setFramerateLimit(60);
+    // window.setFramerateLimit(144);
     sf::Image image;
     image.create(64 * scale, 32 * scale);
     sf::Texture texture;
