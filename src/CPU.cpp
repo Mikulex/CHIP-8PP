@@ -122,7 +122,7 @@ void CPU::execute() {
 			}
 			else if (instruction == 0x00EE) { // return
 				this->pc = this->stack.top();
-				stack.pop();
+				this->stack.pop();
 			}
 			else {
 				throw "Unknown instruction with opcode 0x0";
@@ -185,35 +185,37 @@ void CPU::execute() {
 					break;
 				case 0x4: {// add
 					std::uint16_t newVal = this->v[x] + this->v[y];
+					this->v[x] = newVal;
 					if (newVal > 0xFF) {
 						this->v[0xF] = 1;
 					}
 					else {
 						this->v[0xF] = 0;
 					}
-					this->v[x] = newVal;
 					break;
 				}
 				case 0x5: {// sub
-					std::uint8_t newVal = this->v[x] - this->v[y];
-					this->v[0xF] = this->v[x] > this->v[y] ? 1 : 0;
-					this->v[x] = newVal;
+					bool borrowed = this->v[x] > this->v[y];
+					this->v[x] = this->v[x] - this->v[y];
+					this->v[0xF] = borrowed ? 1 : 0;
 					break;
 				}
 				case 0x6: {// div
-					this->v[0xF] = this->v[x] & 1;
+					std::uint8_t shifted_bit = this->v[x] & 1;
 					this->v[x] = this->v[x] >> 1;
+					this->v[0xF] = shifted_bit;
 					break;
 				}
 				case 0x7: {// subn
-					std::uint8_t newVal = this->v[y] - this->v[x];
-					this->v[0xF] = this->v[x] < this->v[y] ? 1 : 0;
-					this->v[x] = newVal;
+					bool borrowed = this->v[x] < this->v[y];
+					this->v[x] = this->v[y] - this->v[x];
+					this->v[0xF] = borrowed ? 1 : 0;
 					break;
 				}
-				case 0xE: {// div
-					this->v[0xF] = this->v[x] & 0b1000'0000;;
+				case 0xE: {// mul
+					std::uint8_t shifted_bit = (this->v[x] & 0b1000'0000) >> 7;	
 					this->v[x] = this->v[x] << 1;
+					this->v[0xF] = shifted_bit;
 					break;
 				}
 
@@ -246,13 +248,13 @@ void CPU::execute() {
 
 			this->v[0xF] = 0;
 
-			for (int i = 0; i < n; i++) {
-				std::uint8_t row = (this->v[y] + i);
-				if (row > 32 && i == 0) {
+			for (int k = 0; k < n; k++) {
+				std::uint8_t row = (this->v[y] + k);
+				if (row > 32 && k == 0) {
 					break;
 				}
 				row %= 32;
-				std::uint8_t sprite = this->ram[this->i + i];
+				std::uint8_t sprite = this->ram[this->i + k];
 
 				for (std::uint8_t j = 0; j < 8; j++) {
 					std::uint8_t column = (this->v[x] + j);
@@ -308,7 +310,7 @@ void CPU::execute() {
 					break;
 				}
 				case 0x001E: { // add register value to i
-					this->i += this->v[x];
+					this->i = this->i + this->v[x];
 					break;
 				}
 				case 0x0029: { // load sprite
@@ -324,16 +326,16 @@ void CPU::execute() {
 				}
 				case 0x0055: { // load registers into ram
 					std::uint16_t current = this->i;
-					for (int i = 0; i < x; i++) {
-						this->ram[current] = this->v[i];
+					for (int k = 0; k < x; k++) {
+						this->ram[current] = this->v[k];
 						current++;
 					}
 					break;
 				}
 				case 0x0065: { // load ram into registers
 					std::uint16_t current = this->i;
-					for (int i = 0; i <= x; i++) {
-						this->v[i] = this->ram[current];
+					for (int k = 0; k <= x; k++) {
+						this->v[k] = this->ram[current];
 						current++;
 					}
 					break;
