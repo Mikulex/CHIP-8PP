@@ -18,16 +18,21 @@ void drawScreen(CPU& cpu, sf::RenderWindow& window, sf::Image& image) {
     }
 }
 
+std::string chooseRom() {
+    std::cout << "enter filename" << std::endl;
+    std::string file;
+    std::getline(std::cin, file);
+    return file;
+}
+
 int main() {
     const int scale = 8;
     ControlHandler control_handler{ sf::Keyboard{} };
     CPU cpu{control_handler};
     
-
     sf::RenderWindow window(sf::VideoMode(64 * scale, 32 * scale), "CHIP-8PP Emulator");
-    
-    cpu.loadRam();
 
+    
     window.setFramerateLimit(60);
     sf::Image image;
     image.create(64 * scale, 32 * scale);
@@ -36,6 +41,11 @@ int main() {
     sf::Sprite sprite;
     sprite.setTexture(texture);
     sprite.setScale(sf::Vector2f(scale, scale));
+
+
+    std::string rom = chooseRom();
+    
+    cpu.loadRam(rom);
 
     while (window.isOpen())
     {

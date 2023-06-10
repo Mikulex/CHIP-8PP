@@ -3,7 +3,7 @@
 #include <array>
 #include <stack>
 #include "../ControlHandler.h"
-
+#include <string>
 
 class CPU {
     public:
@@ -27,6 +27,6 @@ class CPU {
         bool readInput(std::uint8_t key);
         bool isKeyPressed();
         void clearScreen();
-        void loadRam();
+        void loadRam(std::string string);
 };
         

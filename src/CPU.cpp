@@ -344,19 +344,16 @@ bool CPU::isKeyPressed() {
 	return control_handler.isKeyPressed();
 }
 
-void CPU::clearScreen()
-{
-	for (int y = 0; y < this->screen.size(); y++)
-	{
-		for (int x = 0; x < this->screen[y].size(); x++)
-		{
+void CPU::clearScreen() {
+	for (int y = 0; y < this->screen.size(); y++) {
+		for (int x = 0; x < this->screen[y].size(); x++) {
 			screen[y][x] = false;
 		}
 	}
 }
 
-void CPU::loadRam() {
-	std::ifstream infile("IBM Logo.ch8", std::ios::binary | std::ios::in | std::ios::ate);
+void CPU::loadRam(std::string string) {
+	std::ifstream infile(string, std::ios::binary | std::ios::in | std::ios::ate);
 	std::streamsize size = infile.tellg();
 
 	infile.seekg(0, std::ios::beg);
