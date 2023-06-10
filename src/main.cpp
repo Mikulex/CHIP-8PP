@@ -1,6 +1,7 @@
 #include "CPU.h"
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include "../ControlHandler.h"
 
 
 void drawScreen(CPU& cpu, sf::RenderWindow& window, sf::Image& image) {
@@ -18,9 +19,13 @@ void drawScreen(CPU& cpu, sf::RenderWindow& window, sf::Image& image) {
 }
 
 int main() {
-    int scale = 8;
+    const int scale = 8;
+    ControlHandler control_handler{ sf::Keyboard{} };
+    CPU cpu{control_handler};
+    
+
     sf::RenderWindow window(sf::VideoMode(64 * scale, 32 * scale), "CHIP-8PP Emulator");
-    CPU cpu{};
+    
     cpu.loadRam();
 
     window.setFramerateLimit(60);

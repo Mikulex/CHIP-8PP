@@ -2,10 +2,13 @@
 #include <cstdint>
 #include <array>
 #include <stack>
+#include "../ControlHandler.h"
 
 
 class CPU {
     public:
+        ControlHandler control_handler;
+
         const std::uint16_t PROGRAM_START;
        
         std::array<std::uint8_t, 4096> ram;
@@ -18,9 +21,11 @@ class CPU {
         std::uint16_t pc;
         std::uint8_t sp;
 
-        CPU();
+        CPU(ControlHandler control_handler);
 
         void execute();
+        bool readInput(std::uint8_t key);
+        bool isKeyPressed();
         void clearScreen();
         void loadRam();
 };
