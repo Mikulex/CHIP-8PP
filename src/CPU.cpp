@@ -140,6 +140,7 @@ void CPU::execute() {
 			if (this->v[x] == (instruction & 0x00FF)) {
 				this->pc += 2;
 			}
+			break;
 		}
 		case 0x4000: { // skip if not equal 
 			std::uint16_t x = (instruction & 0x0F00) >> 8;
@@ -270,6 +271,7 @@ void CPU::execute() {
 					this->screen[row][column] = isOn != newVal;
 				}
 			}
+			break;
 		}
 		case 0xE000: { // skip if key (not) pressed
 			std::uint8_t x = (instruction & 0x0F00) >> 8;
@@ -278,13 +280,12 @@ void CPU::execute() {
 					if (readInput(this->v[x])) {
 						this->pc += 2;
 					}
-				break;
+					break;
 				case 0x00A1:
 					if (!readInput(this->v[x])) {
 						this->pc += 2;
 					}
 					break;
-				
 			}
 			break;
 		}
@@ -326,7 +327,7 @@ void CPU::execute() {
 				}
 				case 0x0055: { // load registers into ram
 					std::uint16_t current = this->i;
-					for (int k = 0; k < x; k++) {
+					for (int k = 0; k <= x; k++) {
 						this->ram[current] = this->v[k];
 						current++;
 					}
