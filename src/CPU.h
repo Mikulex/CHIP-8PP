@@ -25,7 +25,7 @@ class CPU {
 
         void execute();
         bool readInput(std::uint8_t key);
-        bool isKeyPressed();
+        bool isKeyPressed(std::uint8_t& pressed_key);
         void clearScreen();
         void loadRam(std::string string);
 };

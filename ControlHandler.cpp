@@ -1,6 +1,7 @@
 #include "ControlHandler.h"
+#include <iostream>
 
-ControlHandler::ControlHandler(sf::Keyboard state) : state {state}, key_map {
+ControlHandler::ControlHandler(sf::Keyboard state) : state{ state }, key_map {
     { 0x1, sf::Keyboard::Key::Num1 },
     { 0x2, sf::Keyboard::Key::Num2 },
     { 0x3, sf::Keyboard::Key::Num3 },
@@ -20,13 +21,19 @@ ControlHandler::ControlHandler(sf::Keyboard state) : state {state}, key_map {
 } {}
 
 bool ControlHandler::keyPressed(std::uint8_t key) {
-    auto key_to_check = key_map.at(key);
-    return key_to_check != NULL && state.isKeyPressed(key_to_check);
+    sf::Keyboard::Key key_to_check = key_map.at(key);
+    if (state.isKeyPressed(key_to_check)) {
+        std::cout << key_to_check << std::endl;
+        return true;
+    }
+    return false;
+    
 }
 
-bool ControlHandler::isKeyPressed() {
+bool ControlHandler::isKeyPressed(std::uint8_t& pressed_key) {
     for (auto pair: key_map) {
         if (state.isKeyPressed(pair.second)) {
+            pressed_key = pair.first;
             return true;
         }
     }

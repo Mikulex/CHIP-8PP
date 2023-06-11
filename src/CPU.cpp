@@ -10,106 +10,115 @@
 #include "../ControlHandler.h"
 
 
-CPU::CPU(ControlHandler control_handler) : PROGRAM_START{ 0x200 }, pc{ PROGRAM_START }, control_handler { control_handler } {
-	// 0, 1
-	ram[0] = 0xF0;
-	ram[1] = 0x90;
-	ram[2] = 0x90;
-	ram[3] = 0x90;
-	ram[4] = 0xF0;
-	ram[5] = 0x20;
-	ram[6] = 0x60;
-	ram[7] = 0x20;
-	ram[8] = 0x20;
-	ram[9] = 0x70;
+CPU::CPU(ControlHandler control_handler) :
+	PROGRAM_START{ 0x200 },
+	pc{ PROGRAM_START },
+	control_handler{ control_handler },
+	screen{ {{0}} },
+	v{ 0 },
+	ram{ 0 },
+	i{ 0 },
+	sound{ 0 },
+	delay{ 0 }
+	{
+		// 0, 1
+		ram[0] = 0xF0;
+		ram[1] = 0x90;
+		ram[2] = 0x90;
+		ram[3] = 0x90;
+		ram[4] = 0xF0;
+		ram[5] = 0x20;
+		ram[6] = 0x60;
+		ram[7] = 0x20;
+		ram[8] = 0x20;
+		ram[9] = 0x70;
 
-	// 2, 3
-	ram[10] = 0xF0;
-	ram[11] = 0x10;
-	ram[12] = 0xF0;
-	ram[13] = 0x80;
-	ram[14] = 0xF0;
-	ram[15] = 0xF0;
-	ram[16] = 0x10;
-	ram[17] = 0xF0;
-	ram[18] = 0x10;
-	ram[19] = 0xF0;
+		// 2, 3
+		ram[10] = 0xF0;
+		ram[11] = 0x10;
+		ram[12] = 0xF0;
+		ram[13] = 0x80;
+		ram[14] = 0xF0;
+		ram[15] = 0xF0;
+		ram[16] = 0x10;
+		ram[17] = 0xF0;
+		ram[18] = 0x10;
+		ram[19] = 0xF0;
 
-	// 4, 5
-	ram[20] = 0x90;
-	ram[21] = 0x90;
-	ram[22] = 0xF0;
-	ram[23] = 0x10;
-	ram[24] = 0x10;
-	ram[25] = 0xF0;
-	ram[26] = 0x80;
-	ram[27] = 0xF0;
-	ram[28] = 0x10;
-	ram[29] = 0xF0;
+		// 4, 5
+		ram[20] = 0x90;
+		ram[21] = 0x90;
+		ram[22] = 0xF0;
+		ram[23] = 0x10;
+		ram[24] = 0x10;
+		ram[25] = 0xF0;
+		ram[26] = 0x80;
+		ram[27] = 0xF0;
+		ram[28] = 0x10;
+		ram[29] = 0xF0;
 
-	// 6, 7
-	ram[30] = 0xF0;
-	ram[31] = 0x80;
-	ram[32] = 0xF0;
-	ram[33] = 0x90;
-	ram[34] = 0xF0;
-	ram[35] = 0xF0;
-	ram[36] = 0x10;
-	ram[37] = 0x20;
-	ram[38] = 0x40;
-	ram[39] = 0x40;
+		// 6, 7
+		ram[30] = 0xF0;
+		ram[31] = 0x80;
+		ram[32] = 0xF0;
+		ram[33] = 0x90;
+		ram[34] = 0xF0;
+		ram[35] = 0xF0;
+		ram[36] = 0x10;
+		ram[37] = 0x20;
+		ram[38] = 0x40;
+		ram[39] = 0x40;
 
-	// 8, 9
-	ram[40] = 0xF0;
-	ram[41] = 0x90;
-	ram[42] = 0xF0;
-	ram[43] = 0x90;
-	ram[44] = 0xF0;
-	ram[45] = 0xF0;
-	ram[46] = 0x90;
-	ram[47] = 0xF0;
-	ram[48] = 0x10;
-	ram[49] = 0xF0;
+		// 8, 9
+		ram[40] = 0xF0;
+		ram[41] = 0x90;
+		ram[42] = 0xF0;
+		ram[43] = 0x90;
+		ram[44] = 0xF0;
+		ram[45] = 0xF0;
+		ram[46] = 0x90;
+		ram[47] = 0xF0;
+		ram[48] = 0x10;
+		ram[49] = 0xF0;
 
-	// A, B
-	ram[50] = 0xF0;
-	ram[51] = 0x90;
-	ram[52] = 0xF0;
-	ram[53] = 0x90;
-	ram[54] = 0x90;
-	ram[55] = 0xE0;
-	ram[56] = 0x90;
-	ram[57] = 0xE0;
-	ram[58] = 0x90;
-	ram[59] = 0xE0;
+		// A, B
+		ram[50] = 0xF0;
+		ram[51] = 0x90;
+		ram[52] = 0xF0;
+		ram[53] = 0x90;
+		ram[54] = 0x90;
+		ram[55] = 0xE0;
+		ram[56] = 0x90;
+		ram[57] = 0xE0;
+		ram[58] = 0x90;
+		ram[59] = 0xE0;
 
-	// C, D
-	ram[60] = 0xF0;
-	ram[61] = 0x80;
-	ram[62] = 0x80;
-	ram[63] = 0x80;
-	ram[64] = 0xF0;
-	ram[65] = 0xE0;
-	ram[66] = 0x90;
-	ram[67] = 0x90;
-	ram[68] = 0x90;
-	ram[69] = 0xE0;
+		// C, D
+		ram[60] = 0xF0;
+		ram[61] = 0x80;
+		ram[62] = 0x80;
+		ram[63] = 0x80;
+		ram[64] = 0xF0;
+		ram[65] = 0xE0;
+		ram[66] = 0x90;
+		ram[67] = 0x90;
+		ram[68] = 0x90;
+		ram[69] = 0xE0;
 
-	// E, F
-	ram[70] = 0xF0;
-	ram[71] = 0x80;
-	ram[72] = 0xF0;
-	ram[73] = 0x80;
-	ram[74] = 0xF0;
-	ram[75] = 0xF0;
-	ram[76] = 0x80;
-	ram[77] = 0xF0;
-	ram[78] = 0x80;
-	ram[79] = 0x80;
-
-	std::cout << "finished loading fonts" << std::endl;
-	std::srand(std::time(nullptr));
-}
+		// E, F
+		ram[70] = 0xF0;
+		ram[71] = 0x80;
+		ram[72] = 0xF0;
+		ram[73] = 0x80;
+		ram[74] = 0xF0;
+		ram[75] = 0xF0;
+		ram[76] = 0x80;
+		ram[77] = 0xF0;
+		ram[78] = 0x80;
+		ram[79] = 0x80;
+		std::cout << "finished loading fonts" << std::endl;
+		std::srand(std::time(nullptr)); 
+	}
 
 void CPU::execute() {
 	std::uint16_t instruction = (this->ram[this->pc] << 8) | (this->ram[this->pc + 1] & 0x00FF);
@@ -297,8 +306,13 @@ void CPU::execute() {
 					break;
 				}
 				case 0x000A: { // wait for key press
-					if (!isKeyPressed()) {
-						this->pc -= 2;
+					std::uint8_t pressed_key;
+					bool pressed = isKeyPressed(pressed_key);
+					if(pressed) {
+						this->v[x] = pressed_key;
+					}
+					else { 
+						this->pc -= 2; 
 					}
 					break;
 				}
@@ -320,9 +334,9 @@ void CPU::execute() {
 				}
 				case 0x0033: { // do bcd conversion
 					std::uint8_t val = this->v[x];
-					this->ram[i] = val % 10;
-					this->ram[i + 1] = (val % 100) / 10;
-					this->ram[i + 2] = val / 100;
+					this->ram[this->i] = val / 100;
+					this->ram[this->i + 1] = (val % 100) / 10;
+					this->ram[this->i + 2] = val % 10;
 					break;
 				}
 				case 0x0055: { // load registers into ram
@@ -351,8 +365,8 @@ bool CPU::readInput(std::uint8_t key) {
 	return control_handler.keyPressed(key);
 }
 
-bool CPU::isKeyPressed() {
-	return control_handler.isKeyPressed();
+bool CPU::isKeyPressed(std::uint8_t& pressed_key) {
+	return control_handler.isKeyPressed(pressed_key);
 }
 
 void CPU::clearScreen() {

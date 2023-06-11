@@ -1,6 +1,7 @@
 #pragma once
 #include<unordered_map>
 #include <SFML/Window/Keyboard.hpp>
+#include <vector>
 
 class ControlHandler {
 public: 
@@ -9,6 +10,5 @@ public:
 
 	ControlHandler(sf::Keyboard state);
 	bool keyPressed(std::uint8_t);
-	bool isKeyPressed();
+	bool isKeyPressed(std::uint8_t& pressed_key);
 };
-
